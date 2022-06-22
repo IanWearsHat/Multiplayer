@@ -13,11 +13,11 @@ public class Player {
 
     private Color color;
 
-    private boolean leftPressed = false;
-    private boolean rightPressed = false;
-    private boolean upPressed = false;
-    private boolean downPressed = false;
-    private boolean shootPressed = false;
+    private volatile boolean leftPressed = false;
+    private volatile boolean rightPressed = false;
+    private volatile boolean upPressed = false;
+    private volatile boolean downPressed = false;
+    private volatile boolean shootPressed = false;
 
     private int mouseX = 0;
     private int mouseY = 0;
@@ -50,6 +50,26 @@ public class Player {
 
     public void setShootPressed(boolean pressed) {
         shootPressed = pressed;
+    }
+
+    public boolean getLeftPressed() {
+        return leftPressed;
+    }
+
+    public boolean getRightPressed() {
+        return rightPressed;
+    }
+
+    public boolean getUpPressed() {
+        return upPressed;
+    }
+
+    public boolean getDownPressed() {
+        return downPressed;
+    }
+
+    public boolean getShotPressed() {
+        return shootPressed;
     }
 
     public void update() {

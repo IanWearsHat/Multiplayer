@@ -4,14 +4,15 @@ package network.packet;
 
 // The first packet type is just a message packet from the server, whether it's from another client or from the server itself.
 // The client that receives this type will just print out the message to the player.
-public class MessagePacket extends Packet {
+public class PlayerStatePacket extends Packet {
 
     private static final long serialVersionUID = 5455552431L;
 
-    public String message;      // for a message sent by the server (maybe from another client)
+    public int x;
+    public int y;
 
-    public MessagePacket(String message) {
-        super();
-        this.message = message;
+    public PlayerStatePacket(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 }

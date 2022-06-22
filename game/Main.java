@@ -119,6 +119,18 @@ public class Main extends JPanel implements Runnable {
                 game.setShootPressed(false);
             }
         };
+
+        Action startServer = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                game.startServer();
+            }
+        };
+
+        Action startClient = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                game.startClient();
+            }
+        };
     
         InputMap inputMap = getInputMap();
         ActionMap actionMap = getActionMap();
@@ -164,6 +176,15 @@ public class Main extends JPanel implements Runnable {
         key = KeyStroke.getKeyStroke("released V");
         inputMap.put(key, "shootReleased");
         actionMap.put("shootReleased", shootReleased);
+
+        // debug for starting a game as a server or client
+        key = KeyStroke.getKeyStroke("O");
+        inputMap.put(key, "startServer");
+        actionMap.put("startServer", startServer);
+
+        key = KeyStroke.getKeyStroke("P");
+        inputMap.put(key, "startClient");
+        actionMap.put("startClient", startClient);
     }
 
     @Override
