@@ -21,13 +21,13 @@ public class Game {
     }
 
     public void startServer() {
-        if (!networkStarted) {
-            new Thread(
-                new ServerSide()
-            ).start();
-            server = true;
-        }
-        networkStarted = true;
+        // if (!networkStarted) {
+        //     new Thread(
+        //         new ServerSide()
+        //     ).start();
+        //     server = true;
+        // }
+        // networkStarted = true;
     }
 
     public void startClient() {

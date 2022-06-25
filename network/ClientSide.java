@@ -35,6 +35,8 @@ public class ClientSide implements Runnable {
 
     private byte[] buf;
 
+    private volatile boolean joined = false;
+
     private Player player;
 
     public ClientSide(Player player) {
@@ -76,6 +78,28 @@ public class ClientSide implements Runnable {
             Port is the same as the port specified in port forwarding for router. */
             LOGGER.log(Level.INFO, "Attempting connection to server...\n");
 
+            Thread receiveInit = new Thread(() -> {
+                while (!joined) {
+                    try {
+                        byte[] buffer = new byte[256];
+                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                        socket.receive(packet);
+
+                        ByteArrayInputStream baos = new ByteArrayInputStream(buffer);
+                        ObjectInputStream ois = new ObjectInputStream(baos);
+                        ClientInitializationPacket received = (ClientInitializationPacket) ois.readObject();
+
+                        LOGGER.log(Level.INFO, "ID: " + received.getID());
+                        joined = true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            receiveInit.start();
+
+            sendInitToServer();
+
 
             // data sent by clients:
             // the player's id
@@ -85,7 +109,7 @@ public class ClientSide implements Runnable {
                 while (true) {
                     try {
                         // playerInfo = new PlayerInputPacket(1, true, false, true, false);
-                        playerInfo = new PlayerInputPacket(1, player.getLeftPressed(), player.getRightPressed(), player.getUpPressed(), player.getDownPressed());
+                         playerInfo = new PlayerInputPacket(1, player.getLeftPressed(), player.getRightPressed(), player.getUpPressed(), player.getDownPressed());
 
                         ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
                         ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
@@ -107,7 +131,7 @@ public class ClientSide implements Runnable {
                         // PlayerPacket received = (PlayerPacket) ois.readObject();
                     }
                     catch (Exception e) {
-
+                        LOGGER.log(Level.SEVERE, "input thread stopped", e);
                     }
                 }
             });
@@ -186,10 +210,31 @@ public class ClientSide implements Runnable {
 
         }
         catch (Exception e) {
-
+            LOGGER.log(Level.SEVERE, "BRUH", e);
         }
         
         kill = true;
+    }
+
+    private void sendInitToServer() {
+        try {
+            InitializePacket initPacket = new InitializePacket();
+            while (!joined) {
+                ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+                ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
+                
+                objectOutStream.writeObject(initPacket);
+                objectOutStream.flush();
+
+                buf = byteOutStream.toByteArray();
+                
+                DatagramPacket packet = new DatagramPacket(buf, buf.length, address, PORT);
+                socket.send(packet);
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e.getStackTrace());
+        }
     }
 
     @Override
